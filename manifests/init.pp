@@ -1,14 +1,21 @@
 # == Class: lvm
 #
+# @summary Provides Logical Resource Management (LVM) features for Puppet
+#
+# @param package_ensure
+# @param manage_pkg
+# @param volume_groups
+#
+
+#
 class lvm (
-  Enum['installed', 'present', 'latest', 'absent'] $package_ensure = 'installed',
   Boolean $manage_pkg                                              = false,
+  Enum['installed', 'present', 'latest', 'absent'] $package_ensure = 'installed',
   Hash $volume_groups                                              = {},
 ) {
-
   if $manage_pkg {
     package { 'lvm2':
-      ensure   => $package_ensure
+      ensure   => $package_ensure,
     }
   }
 

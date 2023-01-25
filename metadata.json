@@ -19,28 +19,31 @@
   ],
   "operatingsystem_support": [
     {
-      "operatingsystem": "RedHat"
+      "operatingsystem": "AIX"
+    },
+    {
+      "operatingsystem": "Archlinux"
     },
     {
       "operatingsystem": "CentOS"
     },
     {
+      "operatingsystem": "Debian"
+    },
+    {
       "operatingsystem": "OracleLinux"
+    },
+    {
+      "operatingsystem": "RedHat"
+    },
+    {
+      "operatingsystem": "SLES"
     },
     {
       "operatingsystem": "Scientific"
     },
     {
-      "operatingsystem": "Debian"
-    },
-    {
       "operatingsystem": "Ubuntu"
-    },
-    {
-      "operatingsystem": "AIX"
-    },
-    {
-      "operatingsystem": "Archlinux"
     }
   ],
   "requirements": [
@@ -49,7 +52,7 @@
       "version_requirement": ">= 4.6.1 < 7.0.0"
     }
   ],
-  "pdk-version": "2.5.0",
+  "pdk-version": "2.6.0",
   "template-url": "pdk-default#2.5.0",
   "template-ref": "tags/2.5.0-0-g369d483"
 }

@@ -5,26 +5,31 @@
 # <code>volume_group</code>, and <code>filesystem</code> resource have been
 # created on the block device supplied.
 #
-# === Parameters
 #
-# [*ensure*] Can only be set to <code>cleaned</code>, <code>absent</code> or
-# <code>present</code>. A value of <code>present</code> will ensure that the
-# <code>physical_volume</code>, <code>volume_group</code>,
-# <code>logical_volume</code>, and <code>filesystem</code> resources are
-# present for the volume. A value of <code>cleaned</code> will ensure that all
-# of the resources are <code>absent</code> <b>Warning this has a high potential
-# for unexpected harm</b> use it with caution. A value of <code>absent</code>
-# will remove only the <code>logical_volume</code> resource from the system.
-# [*pv*] The block device to ensure a <code>physical_volume</code> has been
-# created on.  [*vg*] The <code>volume_group</code> to ensure is created on the
-# <code>physical_volume</code> provided by the <code>pv</code> parameter.
-# [*fstype*] The type of <code>filesystem</code> to create on the logical
-# volume.  [*size*] The size the <code>logical_voluem</code> should be.
+# @param ensure
+#   xxx
+#   Can only be set to `cleaned`, `absent` or `present`.
+#     - present
+#        will ensure that physical_volume, volume_group,
+#        logical_volume, and filesystem resources are present
+#        for the volume.
+#     - cleaned
+#        will ensure that all resources are absent
+#        *Warning* this has a high potential for unexpected harm - use it with caution
+#     - absent
+#        will remove only the logical_volume resource from the system
+# @param pv
+#   The block device to ensure a physical_volume has been created on
+# @param vg
+#   The volume_group to ensure is created on the physical_volume provided by the pv parameter
+# @param extents
+# @param fstype
+#   The type of filesystem to create on the logical volume
+# @param initial_size
+# @param size
+#   Size the logical_volume should be
 #
-# === Examples
-#
-# Provide some examples on how to use this type:
-#
+# @example
 #   lvm::volume { 'lv_example0':
 #     vg     => 'vg_example0',
 #     pv     => '/dev/sdd1',
@@ -32,36 +37,33 @@
 #     size => '100GB',
 #   }
 #
-# === Copyright
 #
-# See README.markdown for the module author information.
+# @license
+#   This file is part of the puppetlabs/lvm puppet module.
 #
-# === License
+#   puppetlabs/lvm is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by the
+#   Free Software Foundation, version 2 of the License.
 #
-# This file is part of the puppetlabs/lvm puppet module.
+#   puppetlabs/lvm is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+#   Public License for more details.
 #
-# puppetlabs/lvm is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by the
-# Free Software Foundation, version 2 of the License.
+#   You should have received a copy of the GNU General Public License along
+#   with puppetlabs/lvm. If not, see http://www.gnu.org/licenses/.
 #
-# puppetlabs/lvm is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-# Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along
-# with puppetlabs/lvm. If not, see http://www.gnu.org/licenses/.
+
 #
 define lvm::volume (
-  $ensure,
-  $pv,
-  $vg,
-  $fstype  = undef,
-  $size    = undef,
-  $extents = undef,
-  $initial_size = undef
+  String $ensure,
+  String $pv,
+  String $vg,
+  Optional[String] $extents      = undef,
+  Optional[String] $fstype       = undef,
+  Optional[String] $initial_size = undef,
+  Optional[String] $size         = undef,
 ) {
-
   if ($name == undef) {
     fail("lvm::volume \$name can't be undefined")
   }
@@ -80,7 +82,7 @@ define lvm::volume (
         volume_group { $vg:
           ensure           => present,
           physical_volumes => $pv,
-          before           => Physical_volume[$pv]
+          before           => Physical_volume[$pv],
         }
 
         logical_volume { $name:
@@ -88,7 +90,7 @@ define lvm::volume (
           volume_group => $vg,
           size         => $size,
           initial_size => $initial_size,
-          before       => Volume_group[$vg]
+          before       => Volume_group[$vg],
         }
       }
     }
@@ -99,7 +101,7 @@ define lvm::volume (
       logical_volume { $name:
         ensure       => absent,
         volume_group => $vg,
-        size         => $size
+        size         => $size,
       }
     }
     #
@@ -115,7 +117,7 @@ define lvm::volume (
         volume_group { $vg:
           ensure           => present,
           physical_volumes => $pv,
-          require          => Physical_volume[$pv]
+          require          => Physical_volume[$pv],
         }
       }
 
@@ -124,21 +126,20 @@ define lvm::volume (
         volume_group => $vg,
         size         => $size,
         extents      => $extents,
-        require      => Volume_group[$vg]
+        require      => Volume_group[$vg],
       }
 
       if $fstype != undef {
         filesystem { "/dev/${vg}/${name}":
           ensure  => present,
           fs_type => $fstype,
-          require => Logical_volume[$name]
+          require => Logical_volume[$name],
         }
       }
-
     }
     default: {
       fail ( sprintf('%s%s', 'puppet-lvm::volume: ensure parameter can only ',
-        'be set to cleaned, absent or present') )
+      'be set to cleaned, absent or present') )
     }
   }
 }
